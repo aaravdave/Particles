@@ -13,6 +13,11 @@ cd [FILE DIRECTORY]
 python3 main.py
 ```
 
+## Controls
+Left/Right Arrow Keys: Switch current element
+S/L: Save/Load Current Setup
+> Load functionality loads the file with the highest number (e.g. `particles3.txt`).
+
 ## Credits and License
 Inspirational credit goes to [Dan-Ball Powder Game 2](https://dan-ball.jp/en/javagame/dust2/).
 
