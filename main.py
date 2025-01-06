@@ -1,3 +1,6 @@
+import json
+import os
+os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = 'hide'
 import pygame
 import pygame.freetype
 import random
@@ -66,7 +69,7 @@ def handle_events():
         elif event.type == pygame.MOUSEMOTION:
             update_mouse_position()
         elif event.type == pygame.KEYUP:
-            update_active_particle(event.key)
+            handle_keys(event.key)
 
 
 def update_mouse_position():
@@ -85,9 +88,42 @@ def apply_mouse_interaction():
     add_particles_in_area(mouse[0], mouse[1])
 
 
-def update_active_particle(key):
-    """Updates the currently active particle type."""
-    global active
+def get_next_file(filename_prefix="particle", extension=".txt"):
+    """
+    Finds the next available filename with incremental numbers (e.g., particle1.txt, particle2.txt).
+    """
+    i = 1
+    while os.path.exists(f"{filename_prefix}{i}{extension}"):
+        i += 1
+    return f"{filename_prefix}{i}{extension}"
+
+
+def get_latest_file(filename_prefix="particle", extension=".txt"):
+    """
+    Finds the latest file with the specified prefix and extension (e.g., particle1.txt, particle2.txt).
+    Returns None if no files are found.
+    """
+    i = 1
+    latest_file = None
+    while os.path.exists(f"{filename_prefix}{i}{extension}"):
+        latest_file = f"{filename_prefix}{i}{extension}"
+        i += 1
+    return latest_file
+
+
+def tuple_keys_to_strings(grid):
+    """Converts tuple keys in a dictionary to strings."""
+    return {str(k): v for k, v in grid.items()}
+
+
+def string_keys_to_tuples(grid):
+    """Converts string keys in a dictionary back to tuples."""
+    return {tuple(map(int, k.strip("()").split(", "))): v for k, v in grid.items()}
+
+
+def handle_keys(key):
+    """Handles keyboard input."""
+    global active, particle_grid
     if key == pygame.K_LEFT:
         active -= 1
         if active == -1:
@@ -96,6 +132,20 @@ def update_active_particle(key):
         active += 1
         if active == len(particle_types):
             active = 0
+    elif key == pygame.K_s:
+        filename = get_next_file()
+        with open(filename, 'w') as file:
+            json.dump(tuple_keys_to_strings(particle_grid), file)
+        print(f"Saved particle grid to {filename}")
+    elif key == pygame.K_l:
+        filename = get_latest_file()
+        if filename:
+            with open(filename, 'r') as file:
+                loaded_grid = json.load(file)
+                particle_grid = string_keys_to_tuples(loaded_grid)
+            print(f"Loaded particle grid from {filename}")
+        else:
+            print("No particle configuration files found.")
 
 
 def is_occupied(x, y):
