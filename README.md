@@ -28,4 +28,4 @@ Contributions are welcome and encouraged in the form of pull requests.
 
 ## Contact
 
-Please contact aaravhdave[at]gmail.com regarding Particles.
+Please contact aaravhdave[at]gmail.com for correspondence regarding Particles.
